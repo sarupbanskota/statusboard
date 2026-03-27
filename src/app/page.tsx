@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import type { DoneTodayBotData } from "@/lib/types";
+import type { DoneTodayBotData, PotatoCouchData } from "@/lib/types";
 import { SmokAlarmLogo } from "@/components/logo";
 
 type AppSummary = {
@@ -15,7 +15,16 @@ type AppSummary = {
   lastCheckedAt: string;
 };
 
-function summarizeApp(data: DoneTodayBotData): AppSummary {
+type AppData = {
+  pipeline: DoneTodayBotData["pipeline"];
+  qualityChecks: DoneTodayBotData["qualityChecks"];
+  lastCheckedAt: string;
+};
+
+function summarizeApp(
+  data: AppData,
+  meta: { slug: string; name: string; description: string }
+): AppSummary {
   const checks = data.qualityChecks;
   const passed = checks.filter((c) => c.status === "pass").length;
   const failed = checks.filter((c) => c.status === "fail").length;
@@ -34,9 +43,7 @@ function summarizeApp(data: DoneTodayBotData): AppSummary {
   else status = "healthy";
 
   return {
-    slug: "done-today-bot",
-    name: "Done Today Bot",
-    description: "Slack bot that generates daily done-today summaries",
+    ...meta,
     status,
     checksSummary:
       total > 0 ? `${passed}/${total} checks passed` : "No check results yet",
@@ -123,9 +130,35 @@ export default function Home() {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/apps/done-today-bot");
-      const data: DoneTodayBotData = await res.json();
-      setApps([summarizeApp(data)]);
+      const [dtbRes, pcRes] = await Promise.all([
+        fetch("/api/apps/done-today-bot"),
+        fetch("/api/apps/potato-couch"),
+      ]);
+      const summaries: AppSummary[] = [];
+
+      if (dtbRes.ok) {
+        const dtb: DoneTodayBotData = await dtbRes.json();
+        summaries.push(
+          summarizeApp(dtb, {
+            slug: "done-today-bot",
+            name: "Done Today Bot",
+            description: "Slack bot that generates daily done-today summaries",
+          })
+        );
+      }
+
+      if (pcRes.ok) {
+        const pc: PotatoCouchData = await pcRes.json();
+        summaries.push(
+          summarizeApp(pc, {
+            slug: "potatocouch",
+            name: "Potato Couch",
+            description: "YouTube mention finder for CodeCrafters",
+          })
+        );
+      }
+
+      setApps(summaries);
     } catch (e) {
       console.error("Failed to fetch:", e);
     } finally {
