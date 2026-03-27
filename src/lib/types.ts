@@ -97,6 +97,27 @@ export type VerifierResult = {
   };
 };
 
+// Potato Couch data
+export type PotatoCouchHealthResponse = {
+  status: string;
+  connected: boolean;
+  startedAt: string;
+  lastVideoUrl: string | null;
+  lastVideoAt: string | null;
+  totalProcessed: number;
+  totalFailed: number;
+  transcriptMethod: "youtube-transcript-plus" | "html-scrape" | "supadata" | null;
+};
+
+export type PotatoCouchData = {
+  pipeline: PipelineStage[];
+  qualityChecks: QualityCheck[];
+  latestCommit: CommitInfo | null;
+  historyWeek: DayHistory[];
+  historyMonth: DayHistory[];
+  lastCheckedAt: string;
+};
+
 // Health endpoint response from Railway
 export type HealthResponse = {
   status: string;
