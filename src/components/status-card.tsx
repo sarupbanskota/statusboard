@@ -11,20 +11,20 @@ function StatusBadge({
   latencyMs?: number;
 }) {
   const colors = {
-    up: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-    down: "bg-red-500/15 text-red-400 border-red-500/20",
-    error: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+    up: "bg-green-bg text-green border-green-border",
+    down: "bg-red-bg text-red border-red-border",
+    error: "bg-amber-bg text-amber border-amber-border",
   };
 
   const dots = {
-    up: "bg-emerald-400",
-    down: "bg-red-400",
-    error: "bg-amber-400",
+    up: "bg-green",
+    down: "bg-red",
+    error: "bg-amber",
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${colors[status]}`}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border ${colors[status]}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${dots[status]}`} />
       {label}
@@ -38,7 +38,7 @@ function StatusBadge({
 function TestBadge({ result }: { result: TestResult }) {
   if (result.status === "skipped") {
     return (
-      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border bg-zinc-800/50 text-zinc-500 border-zinc-700">
+      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-border text-text-muted">
         No tests
       </span>
     );
@@ -47,15 +47,13 @@ function TestBadge({ result }: { result: TestResult }) {
   const isPass = result.status === "pass";
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border ${
         isPass
-          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
-          : "bg-red-500/15 text-red-400 border-red-500/20"
+          ? "bg-green-bg text-green border-green-border"
+          : "bg-red-bg text-red border-red-border"
       }`}
     >
-      <span
-        className={`w-1.5 h-1.5 rounded-full ${isPass ? "bg-emerald-400" : "bg-red-400"}`}
-      />
+      <span className={`w-1.5 h-1.5 rounded-full ${isPass ? "bg-green" : "bg-red"}`} />
       Tests {result.status}
     </span>
   );
@@ -63,7 +61,7 @@ function TestBadge({ result }: { result: TestResult }) {
 
 function overallStatus(checks: CheckResult[]): "up" | "down" | "error" {
   if (checks.every((c) => c.status === "up")) return "up";
-  if (checks.some((c) => c.status === "up")) return "error"; // partial
+  if (checks.some((c) => c.status === "up")) return "error";
   return "down";
 }
 
@@ -71,22 +69,22 @@ export function StatusCard({ app }: { app: AppStatus }) {
   const overall = overallStatus(app.checks);
 
   const borderColor = {
-    up: "border-emerald-500/20",
-    down: "border-red-500/20",
-    error: "border-amber-500/20",
+    up: "border-green-border",
+    down: "border-red-border",
+    error: "border-amber-border",
   };
 
   return (
     <Link
       href={`/apps/${app.slug}`}
-      className={`block rounded-xl border ${borderColor[overall]} bg-zinc-900/50 p-6 transition-colors hover:bg-zinc-900/80`}
+      className={`block rounded-[10px] border ${borderColor[overall]} bg-surface p-5 transition-colors hover:bg-surface-raised/50`}
     >
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-3">
         <div>
-          <h2 className="text-lg font-semibold">{app.name}</h2>
-          <p className="text-zinc-500 text-sm mt-0.5">{app.description}</p>
+          <h2 className="text-base font-medium">{app.name}</h2>
+          <p className="text-text-secondary text-sm mt-0.5">{app.description}</p>
         </div>
-        <span className="text-zinc-600 text-sm">→</span>
+        <span className="text-text-muted text-sm">→</span>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -102,7 +100,7 @@ export function StatusCard({ app }: { app: AppStatus }) {
       </div>
 
       {app.tests.status === "fail" && app.tests.output && (
-        <pre className="mt-4 p-3 bg-zinc-950 rounded-lg text-xs text-red-400 overflow-x-auto max-h-32">
+        <pre className="mt-3 p-3 bg-bg rounded-lg text-xs text-red overflow-x-auto max-h-32">
           {app.tests.output}
         </pre>
       )}

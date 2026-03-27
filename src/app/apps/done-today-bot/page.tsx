@@ -11,25 +11,23 @@ import {
 
 export default function DoneTodayBotPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
-      {/* Header */}
-      <div className="mb-10">
+    <main className="max-w-2xl mx-auto px-6 py-12">
+      <div className="mb-8">
         <Link
           href="/"
-          className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+          className="text-xs text-text-muted hover:text-text-secondary transition-colors"
         >
           ← Back to overview
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight mt-3">
+        <h1 className="text-2xl font-semibold tracking-tight mt-3">
           Done Today Bot
         </h1>
-        <p className="text-zinc-500 mt-1">
+        <p className="text-text-secondary text-sm mt-1">
           Slack bot that generates daily done-today summaries
         </p>
       </div>
 
-      {/* Panels */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         <Pipeline stages={mockPipeline} />
         <QualityChecks checks={mockQualityChecks} />
         <HistoryStrip weekHistory={mockHistoryWeek} monthHistory={mockHistoryMonth} />

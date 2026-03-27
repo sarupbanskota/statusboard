@@ -5,32 +5,28 @@ import type { PipelineStage } from "@/lib/mock-data";
 
 const statusStyles = {
   complete: {
-    bg: "bg-emerald-500/15",
-    border: "border-emerald-500/30",
-    text: "text-emerald-400",
-    dot: "bg-emerald-400",
-    line: "bg-emerald-500/40",
+    bg: "bg-green-bg",
+    border: "border-green-border",
+    text: "text-green",
+    line: "bg-green/40",
   },
   active: {
-    bg: "bg-blue-500/15",
-    border: "border-blue-500/30",
-    text: "text-blue-400",
-    dot: "bg-blue-400 animate-pulse",
-    line: "bg-blue-500/40",
+    bg: "bg-blue-bg",
+    border: "border-blue-border",
+    text: "text-blue",
+    line: "bg-blue/40",
   },
   pending: {
-    bg: "bg-zinc-800/50",
-    border: "border-zinc-700",
-    text: "text-zinc-500",
-    dot: "bg-zinc-600",
-    line: "bg-zinc-700",
+    bg: "bg-surface-raised",
+    border: "border-border",
+    text: "text-text-muted",
+    line: "bg-border",
   },
   failed: {
-    bg: "bg-red-500/15",
-    border: "border-red-500/30",
-    text: "text-red-400",
-    dot: "bg-red-400",
-    line: "bg-red-500/40",
+    bg: "bg-red-bg",
+    border: "border-red-border",
+    text: "text-red",
+    line: "bg-red/40",
   },
 };
 
@@ -38,8 +34,8 @@ function StatusIcon({ status }: { status: PipelineStage["status"] }) {
   if (status === "active") {
     return (
       <span className="relative flex h-3 w-3">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-        <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-400" />
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue opacity-75" />
+        <span className="relative inline-flex rounded-full h-3 w-3 bg-blue" />
       </span>
     );
   }
@@ -63,20 +59,17 @@ function StageNode({
   return (
     <div className="flex items-start gap-0 flex-1 min-w-0">
       <div className="flex flex-col items-center flex-shrink-0">
-        {/* Stage circle */}
         <button
           onClick={onToggle}
-          className={`w-10 h-10 rounded-full border-2 ${s.border} ${s.bg} flex items-center justify-center text-sm font-medium ${s.text} transition-all hover:scale-105 cursor-pointer`}
+          className={`w-10 h-10 rounded-lg border ${s.border} ${s.bg} flex items-center justify-center text-sm font-medium ${s.text} transition-all hover:scale-105 cursor-pointer`}
         >
           <StatusIcon status={stage.status} />
         </button>
-        {/* Label */}
         <span className={`text-xs mt-2 font-medium ${s.text}`}>
           {stage.label}
         </span>
       </div>
 
-      {/* Connector line */}
       {!isLast && (
         <div className="flex items-center flex-1 pt-5 px-1">
           <div className={`h-0.5 w-full ${s.line} rounded-full`} />
@@ -88,16 +81,14 @@ function StageNode({
 
 export function Pipeline({ stages }: { stages: PipelineStage[] }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
   const expanded = stages.find((s) => s.id === expandedId);
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
-      <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider mb-6">
+    <div className="rounded-[10px] border border-border bg-surface p-5">
+      <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider mb-5">
         Today&apos;s Pipeline
       </h3>
 
-      {/* Pipeline stages */}
       <div className="flex items-start">
         {stages.map((stage, i) => (
           <StageNode
@@ -112,20 +103,17 @@ export function Pipeline({ stages }: { stages: PipelineStage[] }) {
         ))}
       </div>
 
-      {/* Expanded detail */}
       {expanded && (
-        <div className="mt-6 p-4 rounded-lg bg-zinc-950/50 border border-zinc-800">
+        <div className="mt-5 p-3 rounded-lg bg-bg border border-border">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-zinc-300">
-              {expanded.label}
-            </span>
+            <span className="text-sm font-medium">{expanded.label}</span>
             {expanded.completedAt && (
-              <span className="text-xs text-zinc-600">
+              <span className="text-xs text-text-muted font-mono">
                 {new Date(expanded.completedAt).toLocaleTimeString()}
               </span>
             )}
           </div>
-          <p className="text-sm text-zinc-500 mt-1">{expanded.detail}</p>
+          <p className="text-sm text-text-secondary mt-1">{expanded.detail}</p>
         </div>
       )}
     </div>

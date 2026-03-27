@@ -30,11 +30,11 @@ export default function Home() {
   }, [refresh]);
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
-      <div className="flex items-center justify-between mb-10">
+    <main className="max-w-2xl mx-auto px-6 py-12">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Statusboard</h1>
-          <p className="text-zinc-500 mt-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Statusboard</h1>
+          <p className="text-text-secondary text-sm mt-1">
             {lastRefresh
               ? `Last checked ${lastRefresh.toLocaleTimeString()}`
               : "Loading..."}
@@ -43,20 +43,20 @@ export default function Home() {
         <button
           onClick={refresh}
           disabled={loading}
-          className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="px-4 py-2 bg-surface-raised hover:bg-surface-raised/80 border border-border rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           {loading ? "Checking..." : "Refresh"}
         </button>
       </div>
 
       {statuses ? (
-        <div className="grid gap-6">
+        <div className="space-y-4">
           {statuses.map((app) => (
             <StatusCard key={app.slug} app={app} />
           ))}
         </div>
       ) : (
-        <div className="text-center text-zinc-500 py-20">
+        <div className="text-center text-text-muted py-20">
           Running health checks...
         </div>
       )}

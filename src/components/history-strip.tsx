@@ -20,40 +20,40 @@ function dayStatus(day: DayHistory): {
 } {
   if (!day.drafted) {
     return {
-      color: "text-zinc-600",
-      bg: "bg-zinc-800/50",
-      border: "border-zinc-700/50",
+      color: "text-text-muted",
+      bg: "bg-surface-raised",
+      border: "border-border",
       tooltip: "No draft generated",
     };
   }
   if (day.checksPassed === false) {
     return {
-      color: "text-red-400",
-      bg: "bg-red-500/10",
-      border: "border-red-500/20",
+      color: "text-red",
+      bg: "bg-red-bg",
+      border: "border-red-border",
       tooltip: "Quality checks failed",
     };
   }
   if (day.posted) {
     return {
-      color: "text-emerald-400",
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/20",
+      color: "text-green",
+      bg: "bg-green-bg",
+      border: "border-green-border",
       tooltip: "Posted to #done-today",
     };
   }
   if (day.checksPassed === null) {
     return {
-      color: "text-blue-400",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
+      color: "text-blue",
+      bg: "bg-blue-bg",
+      border: "border-blue-border",
       tooltip: "Draft generated, quality pending",
     };
   }
   return {
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/20",
+    color: "text-amber",
+    bg: "bg-amber-bg",
+    border: "border-amber-border",
     tooltip: "Quality passed, not posted",
   };
 }
@@ -73,31 +73,30 @@ function WeekView({ history }: { history: DayHistory[] }) {
             className="flex flex-col items-center gap-2 flex-1"
             title={s.tooltip}
           >
-            <span className="text-[10px] text-zinc-600 uppercase">
+            <span className="text-[10px] text-text-muted uppercase font-medium">
               {dayLabel(day.date)}
             </span>
             <div
               className={`w-10 h-10 rounded-lg border ${s.border} ${s.bg} flex items-center justify-center ${
-                isToday ? "ring-1 ring-zinc-500" : ""
+                isToday ? "ring-1 ring-text-muted" : ""
               }`}
             >
               <span className={`text-sm font-medium ${s.color}`}>
                 {dayNum(day.date)}
               </span>
             </div>
-            {/* Status dots */}
             <div className="flex gap-1">
               <span
-                className={`w-1.5 h-1.5 rounded-full ${day.drafted ? "bg-emerald-400" : "bg-zinc-700"}`}
+                className={`w-1.5 h-1.5 rounded-full ${day.drafted ? "bg-green" : "bg-surface-raised"}`}
                 title={day.drafted ? "Drafted" : "Not drafted"}
               />
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
                   day.checksPassed === true
-                    ? "bg-emerald-400"
+                    ? "bg-green"
                     : day.checksPassed === false
-                      ? "bg-red-400"
-                      : "bg-zinc-700"
+                      ? "bg-red"
+                      : "bg-surface-raised"
                 }`}
                 title={
                   day.checksPassed === true
@@ -108,7 +107,7 @@ function WeekView({ history }: { history: DayHistory[] }) {
                 }
               />
               <span
-                className={`w-1.5 h-1.5 rounded-full ${day.posted ? "bg-emerald-400" : "bg-zinc-700"}`}
+                className={`w-1.5 h-1.5 rounded-full ${day.posted ? "bg-green" : "bg-surface-raised"}`}
                 title={day.posted ? "Posted" : "Not posted"}
               />
             </div>
@@ -120,38 +119,29 @@ function WeekView({ history }: { history: DayHistory[] }) {
 }
 
 function MonthView({ history }: { history: DayHistory[] }) {
-  // Build a calendar grid — pad to start on the correct weekday
   const firstDate = new Date(history[0].date + "T12:00:00");
-  const startDow = firstDate.getDay(); // 0=Sun
+  const startDow = firstDate.getDay();
   const padded: (DayHistory | null)[] = [
     ...Array(startDow).fill(null),
     ...history,
   ];
 
-  // Fill remaining cells to complete the last week
   while (padded.length % 7 !== 0) {
     padded.push(null);
   }
 
-  const weeks: (DayHistory | null)[][] = [];
-  for (let i = 0; i < padded.length; i += 7) {
-    weeks.push(padded.slice(i, i + 7));
-  }
-
   return (
     <div>
-      {/* Day headers */}
       <div className="grid grid-cols-7 gap-1.5 mb-1.5">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
           <div
             key={d}
-            className="text-[10px] text-zinc-600 uppercase text-center"
+            className="text-[10px] text-text-muted uppercase text-center font-medium"
           >
             {d}
           </div>
         ))}
       </div>
-      {/* Weeks */}
       <div className="grid grid-cols-7 gap-1.5">
         {padded.map((day, i) => {
           if (!day) {
@@ -164,8 +154,8 @@ function MonthView({ history }: { history: DayHistory[] }) {
           return (
             <div
               key={day.date}
-              className={`aspect-square rounded-md border ${s.border} ${s.bg} flex items-center justify-center ${
-                isToday ? "ring-1 ring-zinc-500" : ""
+              className={`aspect-square rounded-lg border ${s.border} ${s.bg} flex items-center justify-center ${
+                isToday ? "ring-1 ring-text-muted" : ""
               }`}
               title={`${day.date}: ${s.tooltip}`}
             >
@@ -190,18 +180,18 @@ export function HistoryStrip({
   const [view, setView] = useState<"week" | "month">("week");
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+    <div className="rounded-[10px] border border-border bg-surface p-5">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
+        <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider">
           History
         </h3>
-        <div className="flex bg-zinc-800 rounded-lg p-0.5">
+        <div className="flex bg-bg rounded-lg p-0.5 border border-border">
           <button
             onClick={() => setView("week")}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
               view === "week"
-                ? "bg-zinc-700 text-zinc-200"
-                : "text-zinc-500 hover:text-zinc-400"
+                ? "bg-surface-raised text-text-primary"
+                : "text-text-muted hover:text-text-secondary"
             }`}
           >
             Week
@@ -210,8 +200,8 @@ export function HistoryStrip({
             onClick={() => setView("month")}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
               view === "month"
-                ? "bg-zinc-700 text-zinc-200"
-                : "text-zinc-500 hover:text-zinc-400"
+                ? "bg-surface-raised text-text-primary"
+                : "text-text-muted hover:text-text-secondary"
             }`}
           >
             Month
@@ -225,12 +215,11 @@ export function HistoryStrip({
         <MonthView history={monthHistory} />
       )}
 
-      {/* Legend */}
       <div className="flex gap-4 mt-4 justify-center">
         {["Drafted", "Quality", "Posted"].map((label) => (
           <div key={label} className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span className="text-[10px] text-zinc-600">{label}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-green" />
+            <span className="text-[10px] text-text-muted">{label}</span>
           </div>
         ))}
       </div>
