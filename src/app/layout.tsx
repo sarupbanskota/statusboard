@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Smoke Alarm",
   description: "Health dashboard for your apps",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
