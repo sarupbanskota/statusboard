@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { DayHistory } from "@/lib/mock-data";
+import type { DayHistory } from "@/lib/types";
 
 function dayLabel(dateStr: string): string {
   const d = new Date(dateStr + "T12:00:00");

@@ -30,7 +30,7 @@ export const apps: AppConfig[] = [
     checks: [
       {
         type: "http",
-        target: "https://done-today-bot-production.up.railway.app/health",
+        target: "https://upbeat-magic-production-3a7a.up.railway.app/health",
         label: "Railway",
       },
       {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { PipelineStage } from "@/lib/mock-data";
+import type { PipelineStage } from "@/lib/types";
 
 const statusStyles = {
   complete: {

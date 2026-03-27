@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { QualityCheck, SubCheck } from "@/lib/mock-data";
+import type { QualityCheck, SubCheck } from "@/lib/types";
 
 const statusIcon: Record<QualityCheck["status"], { icon: string; color: string }> = {
   pass: { icon: "✓", color: "text-green" },
