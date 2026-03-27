@@ -43,7 +43,7 @@ export default function Home() {
         <button
           onClick={refresh}
           disabled={loading}
-          className="px-4 py-2 bg-surface-raised hover:bg-surface-raised/80 border border-border rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="px-4 py-2 bg-surface-raised hover:bg-surface-raised/80 border border-border  text-sm font-medium transition-colors disabled:opacity-50"
         >
           {loading ? "Checking..." : "Refresh"}
         </button>

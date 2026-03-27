@@ -12,6 +12,20 @@ function dayNum(dateStr: string): string {
   return dateStr.split("-")[2].replace(/^0/, "");
 }
 
+function formatDateRange(history: DayHistory[]): string {
+  if (history.length === 0) return "";
+  const first = new Date(history[0].date + "T12:00:00");
+  const last = new Date(history[history.length - 1].date + "T12:00:00");
+  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  return `${first.toLocaleDateString("en-US", opts)} – ${last.toLocaleDateString("en-US", opts)}`;
+}
+
+function formatMonth(history: DayHistory[]): string {
+  if (history.length === 0) return "";
+  const d = new Date(history[0].date + "T12:00:00");
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
 function dayStatus(day: DayHistory): {
   color: string;
   bg: string;
@@ -31,7 +45,7 @@ function dayStatus(day: DayHistory): {
       color: "text-red",
       bg: "bg-red-bg",
       border: "border-red-border",
-      tooltip: "Quality checks failed",
+      tooltip: "Drafted ✓ · Quality ✕ · Not posted",
     };
   }
   if (day.posted) {
@@ -39,7 +53,7 @@ function dayStatus(day: DayHistory): {
       color: "text-green",
       bg: "bg-green-bg",
       border: "border-green-border",
-      tooltip: "Posted to #done-today",
+      tooltip: "Drafted ✓ · Quality ✓ · Posted ✓",
     };
   }
   if (day.checksPassed === null) {
@@ -47,14 +61,14 @@ function dayStatus(day: DayHistory): {
       color: "text-blue",
       bg: "bg-blue-bg",
       border: "border-blue-border",
-      tooltip: "Draft generated, quality pending",
+      tooltip: "Drafted ✓ · Quality pending · Not posted",
     };
   }
   return {
     color: "text-amber",
     bg: "bg-amber-bg",
     border: "border-amber-border",
-    tooltip: "Quality passed, not posted",
+    tooltip: "Drafted ✓ · Quality ✓ · Not posted",
   };
 }
 
@@ -62,7 +76,7 @@ const today = new Date().toISOString().split("T")[0];
 
 function WeekView({ history }: { history: DayHistory[] }) {
   return (
-    <div className="flex gap-3 justify-between">
+    <div className="grid grid-cols-7 gap-1.5">
       {history.map((day) => {
         const s = dayStatus(day);
         const isToday = day.date === today;
@@ -70,46 +84,20 @@ function WeekView({ history }: { history: DayHistory[] }) {
         return (
           <div
             key={day.date}
-            className="flex flex-col items-center gap-2 flex-1"
+            className="flex flex-col items-center gap-1.5"
             title={s.tooltip}
           >
             <span className="text-[10px] text-text-muted uppercase font-medium">
               {dayLabel(day.date)}
             </span>
             <div
-              className={`w-10 h-10 rounded-lg border ${s.border} ${s.bg} flex items-center justify-center ${
+              className={`w-full aspect-square border ${s.border} ${s.bg} flex items-center justify-center ${
                 isToday ? "ring-1 ring-text-muted" : ""
               }`}
             >
               <span className={`text-sm font-medium ${s.color}`}>
                 {dayNum(day.date)}
               </span>
-            </div>
-            <div className="flex gap-1">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${day.drafted ? "bg-green" : "bg-surface-raised"}`}
-                title={day.drafted ? "Drafted" : "Not drafted"}
-              />
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  day.checksPassed === true
-                    ? "bg-green"
-                    : day.checksPassed === false
-                      ? "bg-red"
-                      : "bg-surface-raised"
-                }`}
-                title={
-                  day.checksPassed === true
-                    ? "Quality passed"
-                    : day.checksPassed === false
-                      ? "Quality failed"
-                      : "Not checked"
-                }
-              />
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${day.posted ? "bg-green" : "bg-surface-raised"}`}
-                title={day.posted ? "Posted" : "Not posted"}
-              />
             </div>
           </div>
         );
@@ -154,7 +142,7 @@ function MonthView({ history }: { history: DayHistory[] }) {
           return (
             <div
               key={day.date}
-              className={`aspect-square rounded-lg border ${s.border} ${s.bg} flex items-center justify-center ${
+              className={`aspect-square  border ${s.border} ${s.bg} flex items-center justify-center ${
                 isToday ? "ring-1 ring-text-muted" : ""
               }`}
               title={`${day.date}: ${s.tooltip}`}
@@ -170,6 +158,12 @@ function MonthView({ history }: { history: DayHistory[] }) {
   );
 }
 
+const legendItems = [
+  { label: "Drafted" },
+  { label: "Quality" },
+  { label: "Posted" },
+];
+
 export function HistoryStrip({
   weekHistory,
   monthHistory,
@@ -179,16 +173,24 @@ export function HistoryStrip({
 }) {
   const [view, setView] = useState<"week" | "month">("week");
 
+  const dateLabel =
+    view === "week"
+      ? formatDateRange(weekHistory)
+      : formatMonth(monthHistory);
+
   return (
-    <div className="rounded-[10px] border border-border bg-surface p-5">
+    <div className=" border border-border bg-surface p-5">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider">
-          History
-        </h3>
-        <div className="flex bg-bg rounded-lg p-0.5 border border-border">
+        <div>
+          <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider">
+            History
+          </h3>
+          <p className="text-xs text-text-secondary mt-0.5">{dateLabel}</p>
+        </div>
+        <div className="flex bg-bg  p-0.5 border border-border">
           <button
             onClick={() => setView("week")}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3 py-1 text-xs font-medium  transition-colors ${
               view === "week"
                 ? "bg-surface-raised text-text-primary"
                 : "text-text-muted hover:text-text-secondary"
@@ -198,7 +200,7 @@ export function HistoryStrip({
           </button>
           <button
             onClick={() => setView("month")}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3 py-1 text-xs font-medium  transition-colors ${
               view === "month"
                 ? "bg-surface-raised text-text-primary"
                 : "text-text-muted hover:text-text-secondary"
@@ -215,14 +217,6 @@ export function HistoryStrip({
         <MonthView history={monthHistory} />
       )}
 
-      <div className="flex gap-4 mt-4 justify-center">
-        {["Drafted", "Quality", "Posted"].map((label) => (
-          <div key={label} className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-green" />
-            <span className="text-[10px] text-text-muted">{label}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

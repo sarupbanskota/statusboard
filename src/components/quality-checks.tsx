@@ -11,8 +11,8 @@ const statusIcon: Record<QualityCheck["status"], { icon: string; color: string }
 
 const statusRowBg: Record<QualityCheck["status"], string> = {
   pass: "hover:bg-surface-raised/50",
-  fail: "bg-red-bg hover:bg-red-bg",
-  warn: "bg-amber-bg hover:bg-amber-bg",
+  fail: "bg-red-bg",
+  warn: "bg-amber-bg",
 };
 
 function SubCheckRow({ sub }: { sub: SubCheck }) {
@@ -39,10 +39,10 @@ function CheckRow({ check }: { check: QualityCheck }) {
   const hasExpandable = check.detail || check.subChecks;
 
   return (
-    <div className={`rounded-lg transition-colors ${statusRowBg[check.status]}`}>
+    <div className={`transition-colors ${statusRowBg[check.status]}`}>
       <button
         onClick={() => hasExpandable && setExpanded(!expanded)}
-        className={`w-full flex items-center gap-3 px-4 py-3 text-left ${hasExpandable ? "cursor-pointer" : "cursor-default"}`}
+        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left ${hasExpandable ? "cursor-pointer" : "cursor-default"}`}
       >
         <span className={`w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 ${color}`}>
           {icon}
@@ -56,7 +56,7 @@ function CheckRow({ check }: { check: QualityCheck }) {
         </div>
 
         <span
-          className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded flex-shrink-0 ${
+          className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 flex-shrink-0 ${
             check.severity === "critical"
               ? "bg-red-bg text-red"
               : "bg-surface-raised text-text-muted"
@@ -83,7 +83,7 @@ function CheckRow({ check }: { check: QualityCheck }) {
       </button>
 
       {expanded && (
-        <div className="px-4 pb-3 pl-12">
+        <div className="px-3 pb-3 pl-11">
           {check.detail && (
             <p className="text-xs text-text-secondary">{check.detail}</p>
           )}
@@ -124,17 +124,86 @@ const categoryLabels: Record<string, string> = {
   functional: "Functional",
 };
 
+function categorySummary(checks: QualityCheck[]): {
+  status: "pass" | "warn" | "fail";
+  label: string;
+} {
+  const criticalFails = checks.filter((c) => c.status === "fail" && c.severity === "critical").length;
+  const criticalWarns = checks.filter((c) => c.status === "warn" && c.severity === "critical").length;
+  const fails = checks.filter((c) => c.status === "fail").length;
+  const warns = checks.filter((c) => c.status === "warn").length;
+
+  // Critical failures take top priority
+  if (criticalFails > 0) return { status: "fail", label: `${criticalFails} critical failed` };
+  if (fails > 0) return { status: "fail", label: `${fails} failed` };
+  if (criticalWarns > 0) return { status: "warn", label: `${criticalWarns} critical warning${criticalWarns > 1 ? "s" : ""}` };
+  if (warns > 0) return { status: "warn", label: `${warns} warning${warns > 1 ? "s" : ""}` };
+
+  // All passed — but note how many critical checks exist
+  const criticalCount = checks.filter((c) => c.severity === "critical").length;
+  if (criticalCount > 0) return { status: "pass", label: `All passed · ${criticalCount} critical` };
+  return { status: "pass", label: "All passed" };
+}
+
+function CategorySection({
+  cat,
+  checks,
+}: {
+  cat: string;
+  checks: QualityCheck[];
+}) {
+  const summary = categorySummary(checks);
+  const { icon, color } = statusIcon[summary.status];
+  // Collapsed by default if everything passes
+  const [expanded, setExpanded] = useState(summary.status !== "pass");
+
+  return (
+    <div className=" border border-border bg-bg overflow-hidden">
+      {/* Category header — always visible */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-surface-raised/30 transition-colors"
+      >
+        <span className={`text-xs font-bold ${color}`}>{icon}</span>
+        <span className="text-sm font-medium flex-1 text-left">
+          {categoryLabels[cat]}
+        </span>
+        <span className={`text-xs ${color}`}>{summary.label}</span>
+        <span className="text-xs text-text-muted">{checks.length}</span>
+        <span
+          className={`text-text-muted text-xs transition-transform ${expanded ? "rotate-90" : ""}`}
+        >
+          ›
+        </span>
+      </button>
+
+      {/* Expanded check list */}
+      {expanded && (
+        <div className="border-t border-border px-1 py-1">
+          <div className="space-y-0.5">
+            {checks.map((check) => (
+              <CheckRow key={check.id} check={check} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function QualityChecks({ checks }: { checks: QualityCheck[] }) {
   const categories = ["integration", "eval", "functional"] as const;
 
   const passCount = checks.filter((c) => c.status === "pass").length;
   const total = checks.length;
 
-  const lastRun = checks.reduce((latest, c) =>
-    c.checkedAt > latest ? c.checkedAt : latest, checks[0]?.checkedAt || "");
+  const lastRun = checks.reduce(
+    (latest, c) => (c.checkedAt > latest ? c.checkedAt : latest),
+    checks[0]?.checkedAt || ""
+  );
 
   return (
-    <div className="rounded-[10px] border border-border bg-surface p-5">
+    <div className=" border border-border bg-surface p-5">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider">
           Quality Checks
@@ -143,27 +212,19 @@ export function QualityChecks({ checks }: { checks: QualityCheck[] }) {
           {passCount}/{total} passed
         </span>
       </div>
-      <p className="text-xs text-text-muted mb-5 font-mono">
+      <p className="text-xs text-text-muted mb-4 font-mono">
         Last run {formatTime(lastRun)}
       </p>
 
-      {categories.map((cat) => {
-        const catChecks = checks.filter((c) => c.category === cat);
-        if (catChecks.length === 0) return null;
-
-        return (
-          <div key={cat} className="mb-4 last:mb-0">
-            <p className="text-[11px] text-text-muted uppercase tracking-wider mb-2 px-4 font-medium">
-              {categoryLabels[cat]}
-            </p>
-            <div className="space-y-0.5">
-              {catChecks.map((check) => (
-                <CheckRow key={check.id} check={check} />
-              ))}
-            </div>
-          </div>
-        );
-      })}
+      <div className="space-y-2">
+        {categories.map((cat) => {
+          const catChecks = checks.filter((c) => c.category === cat);
+          if (catChecks.length === 0) return null;
+          return (
+            <CategorySection key={cat} cat={cat} checks={catChecks} />
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -61,7 +61,7 @@ function StageNode({
       <div className="flex flex-col items-center flex-shrink-0">
         <button
           onClick={onToggle}
-          className={`w-10 h-10 rounded-lg border ${s.border} ${s.bg} flex items-center justify-center text-sm font-medium ${s.text} transition-all hover:scale-105 cursor-pointer`}
+          className={`w-10 h-10  border ${s.border} ${s.bg} flex items-center justify-center text-sm font-medium ${s.text} transition-all hover:scale-105 cursor-pointer`}
         >
           <StatusIcon status={stage.status} />
         </button>
@@ -84,7 +84,7 @@ export function Pipeline({ stages }: { stages: PipelineStage[] }) {
   const expanded = stages.find((s) => s.id === expandedId);
 
   return (
-    <div className="rounded-[10px] border border-border bg-surface p-5">
+    <div className=" border border-border bg-surface p-5">
       <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider mb-5">
         Today&apos;s Pipeline
       </h3>
@@ -104,7 +104,7 @@ export function Pipeline({ stages }: { stages: PipelineStage[] }) {
       </div>
 
       {expanded && (
-        <div className="mt-5 p-3 rounded-lg bg-bg border border-border">
+        <div className="mt-5 p-3  bg-bg border border-border">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">{expanded.label}</span>
             {expanded.completedAt && (
