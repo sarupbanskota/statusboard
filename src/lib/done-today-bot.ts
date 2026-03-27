@@ -31,7 +31,7 @@ type HistoryEntry = {
 
 // --- Pipeline ---
 
-export async function fetchPipeline(): Promise<PipelineStage[]> {
+export async function fetchPipeline(): Promise<{ stages: PipelineStage[]; dateFor: string | null }> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -41,15 +41,18 @@ export async function fetchPipeline(): Promise<PipelineStage[]> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const health: HealthResponse = await res.json();
-    return healthToPipeline(health);
+    return { stages: healthToPipeline(health), dateFor: health.dateFor };
   } catch {
-    return [
-      { id: "sources", label: "Sources", status: "failed", detail: "Cannot reach Railway deployment" },
-      { id: "draft", label: "Draft", status: "pending", detail: "" },
-      { id: "enrichment", label: "Enrichment", status: "pending", detail: "" },
-      { id: "review", label: "Review", status: "pending", detail: "" },
-      { id: "posted", label: "Posted", status: "pending", detail: "" },
-    ];
+    return {
+      stages: [
+        { id: "sources", label: "Sources", status: "failed", detail: "Cannot reach Railway deployment" },
+        { id: "draft", label: "Draft", status: "pending", detail: "" },
+        { id: "enrichment", label: "Enrichment", status: "pending", detail: "" },
+        { id: "review", label: "Review", status: "pending", detail: "" },
+        { id: "posted", label: "Posted", status: "pending", detail: "" },
+      ],
+      dateFor: null,
+    };
   }
 }
 
@@ -169,14 +172,15 @@ function buildDayHistory(entries: HistoryEntry[], days: number): DayHistory[] {
 // --- Combined ---
 
 export async function getDoneTodayBotData(): Promise<DoneTodayBotData> {
-  const [pipeline, latestResult, historyEntries] = await Promise.all([
+  const [pipelineData, latestResult, historyEntries] = await Promise.all([
     fetchPipeline(),
     fetchLatestResult(),
     fetchHistory(),
   ]);
 
   return {
-    pipeline,
+    pipeline: pipelineData.stages,
+    pipelineDateFor: pipelineData.dateFor,
     qualityChecks: latestResult?.checks ?? [],
     latestCommit: latestResult?.commit ?? null,
     historyWeek: buildDayHistory(historyEntries, 7),

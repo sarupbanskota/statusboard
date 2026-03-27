@@ -79,14 +79,25 @@ function StageNode({
   );
 }
 
-export function Pipeline({ stages }: { stages: PipelineStage[] }) {
+export function Pipeline({ stages, dateFor }: { stages: PipelineStage[]; dateFor?: string }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const expanded = stages.find((s) => s.id === expandedId);
+
+  let dateLabel = "Pipeline";
+  if (dateFor) {
+    const d = new Date(dateFor + "T12:00:00");
+    const today = new Date().toISOString().split("T")[0];
+    if (dateFor === today) {
+      dateLabel = "Today's Pipeline";
+    } else {
+      dateLabel = `Pipeline — ${d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`;
+    }
+  }
 
   return (
     <div className=" border border-border bg-surface p-5">
       <h3 className="text-xs font-medium text-text-muted uppercase tracking-wider mb-5">
-        Today&apos;s Pipeline
+        {dateLabel}
       </h3>
 
       <div className="flex items-start">

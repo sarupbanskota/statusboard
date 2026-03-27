@@ -81,7 +81,7 @@ export default function DoneTodayBotPage() {
 
       {data ? (
         <div className="space-y-4">
-          <Pipeline stages={data.pipeline} />
+          <Pipeline stages={data.pipeline} dateFor={data.pipelineDateFor ?? undefined} />
 
           {data.qualityChecks.length > 0 ? (
             <QualityChecks checks={data.qualityChecks} />

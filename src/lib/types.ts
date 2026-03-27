@@ -53,6 +53,7 @@ export type RunHistory = {
 
 export type DoneTodayBotData = {
   pipeline: PipelineStage[];
+  pipelineDateFor: string | null;
   qualityChecks: QualityCheck[];
   latestCommit: CommitInfo | null;
   historyWeek: DayHistory[];
