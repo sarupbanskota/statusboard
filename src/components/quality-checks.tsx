@@ -18,9 +18,14 @@ const statusRowBg: Record<QualityCheck["status"], string> = {
 function SubCheckRow({ sub }: { sub: SubCheck }) {
   const { icon, color } = statusIcon[sub.status];
   return (
-    <div className="flex items-center gap-2 py-1">
-      <span className={`text-xs ${color}`}>{icon}</span>
-      <span className="text-xs text-text-secondary">{sub.name}</span>
+    <div className="py-1">
+      <div className="flex items-center gap-2">
+        <span className={`text-xs ${color}`}>{icon}</span>
+        <span className="text-xs text-text-secondary">{sub.name}</span>
+      </div>
+      {sub.evidence && sub.status !== "pass" && (
+        <p className="text-[11px] text-text-muted ml-5 mt-0.5">{sub.evidence}</p>
+      )}
     </div>
   );
 }

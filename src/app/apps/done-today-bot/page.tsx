@@ -64,18 +64,16 @@ export default function DoneTodayBotPage() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={refresh}
-              disabled={loading}
-              className="px-3 py-1.5 bg-surface-raised hover:bg-surface-raised/80 border border-border text-xs font-medium transition-colors disabled:opacity-50"
+              disabled
+              className="px-3 py-1.5 bg-surface-raised border border-border text-xs font-medium opacity-40 cursor-not-allowed"
             >
-              {loading ? "Loading..." : "Refresh"}
+              Refresh
             </button>
             <button
-              onClick={runChecks}
-              disabled={running}
-              className="px-3 py-1.5 bg-green-bg hover:bg-green-bg/80 border border-green-border text-green text-xs font-medium transition-colors disabled:opacity-50"
+              disabled
+              className="px-3 py-1.5 bg-green-bg border border-green-border text-green text-xs font-medium opacity-40 cursor-not-allowed"
             >
-              {running ? "Running..." : "Run checks"}
+              Run checks
             </button>
           </div>
         </div>

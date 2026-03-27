@@ -9,6 +9,7 @@ export type PipelineStage = {
 export type SubCheck = {
   name: string;
   status: "pass" | "fail" | "warn";
+  evidence?: string;
 };
 
 export type QualityCheck = {
