@@ -57,7 +57,7 @@ function CheckRow({ check }: { check: QualityCheck }) {
 
         <span
           className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 flex-shrink-0 ${
-            check.severity === "critical"
+            check.severity === "critical" && check.status !== "pass"
               ? "bg-red-bg text-red"
               : "bg-surface-raised text-text-muted"
           }`}
@@ -130,19 +130,15 @@ function categorySummary(checks: QualityCheck[]): {
 } {
   const fails = checks.filter((c) => c.status === "fail").length;
   const warns = checks.filter((c) => c.status === "warn").length;
-  const criticalCount = checks.filter((c) => c.severity === "critical").length;
 
+  // Only surface actual problems in the header
   const parts: string[] = [];
-
   if (fails > 0) parts.push(`${fails} failed`);
-  if (warns > 0) parts.push(`${warns} warn`);
-
-  // Always mention critical checks — they represent high-stakes items
-  if (criticalCount > 0) parts.push(`${criticalCount} critical`);
+  if (warns > 0) parts.push(`${warns} warning${warns > 1 ? "s" : ""}`);
 
   if (parts.length === 0) return { status: "pass", label: "All passed" };
 
-  const status = fails > 0 ? "fail" : warns > 0 ? "warn" : "pass";
+  const status = fails > 0 ? "fail" : "warn";
   return { status, label: parts.join(" · ") };
 }
 
