@@ -57,9 +57,11 @@ function CheckRow({ check }: { check: QualityCheck }) {
 
         <span
           className={`text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 flex-shrink-0 ${
-            check.severity === "critical" && check.status !== "pass"
-              ? "bg-red-bg text-red"
-              : "bg-surface-raised text-text-muted"
+            check.status === "pass"
+              ? "bg-surface-raised text-text-muted"
+              : check.severity === "critical"
+                ? "bg-red-bg text-red"
+                : "bg-amber-bg text-amber"
           }`}
         >
           {check.severity}
