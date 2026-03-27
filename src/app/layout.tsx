@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Statusboard",
+  title: "Smoke Alarm",
   description: "Health dashboard for your apps",
 };
 

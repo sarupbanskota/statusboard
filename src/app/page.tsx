@@ -143,7 +143,7 @@ export default function Home() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Statusboard
+            Smoke Alarm
           </h1>
           <p className="text-text-secondary text-sm mt-1">
             Health dashboard for your apps
