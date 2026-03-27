@@ -221,10 +221,10 @@ export const mockQualityChecks: QualityCheck[] = [
     name: "Source collection",
     description: "All 4 remote sources (Slack, Gmail, Calendar, GitHub) return data",
     category: "functional",
-    status: "pass",
+    status: "fail",
     severity: "critical",
-    durationMs: 2100,
-    detail: "Slack: 12 msgs, Gmail: 4 emails, Calendar: 3 events, GitHub: 7 commits",
+    durationMs: 5400,
+    detail: "Slack: 12 msgs, Gmail: 0 emails (API error 401), Calendar: 3 events, GitHub: 7 commits",
     checkedAt: "2026-03-27T07:02:07-07:00",
   },
   {
