@@ -128,21 +128,22 @@ function categorySummary(checks: QualityCheck[]): {
   status: "pass" | "warn" | "fail";
   label: string;
 } {
-  const criticalFails = checks.filter((c) => c.status === "fail" && c.severity === "critical").length;
-  const criticalWarns = checks.filter((c) => c.status === "warn" && c.severity === "critical").length;
   const fails = checks.filter((c) => c.status === "fail").length;
   const warns = checks.filter((c) => c.status === "warn").length;
-
-  // Critical failures take top priority
-  if (criticalFails > 0) return { status: "fail", label: `${criticalFails} critical failed` };
-  if (fails > 0) return { status: "fail", label: `${fails} failed` };
-  if (criticalWarns > 0) return { status: "warn", label: `${criticalWarns} critical warning${criticalWarns > 1 ? "s" : ""}` };
-  if (warns > 0) return { status: "warn", label: `${warns} warning${warns > 1 ? "s" : ""}` };
-
-  // All passed — but note how many critical checks exist
   const criticalCount = checks.filter((c) => c.severity === "critical").length;
-  if (criticalCount > 0) return { status: "pass", label: `All passed · ${criticalCount} critical` };
-  return { status: "pass", label: "All passed" };
+
+  const parts: string[] = [];
+
+  if (fails > 0) parts.push(`${fails} failed`);
+  if (warns > 0) parts.push(`${warns} warn`);
+
+  // Always mention critical checks — they represent high-stakes items
+  if (criticalCount > 0) parts.push(`${criticalCount} critical`);
+
+  if (parts.length === 0) return { status: "pass", label: "All passed" };
+
+  const status = fails > 0 ? "fail" : warns > 0 ? "warn" : "pass";
+  return { status, label: parts.join(" · ") };
 }
 
 function CategorySection({
