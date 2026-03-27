@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import type { DoneTodayBotData } from "@/lib/types";
+import { SmokAlarmLogo } from "@/components/logo";
 
 type AppSummary = {
   slug: string;
@@ -142,9 +143,12 @@ export default function Home() {
     <main className="max-w-2xl mx-auto px-6 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Smoke Alarm
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <SmokAlarmLogo size={28} />
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Smoke Alarm
+            </h1>
+          </div>
           <p className="text-text-secondary text-sm mt-1">
             Health dashboard for your apps
           </p>

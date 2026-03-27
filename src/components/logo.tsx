@@ -1,0 +1,57 @@
+export function SmokAlarmLogo({ size = 28 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Bell body */}
+      <path
+        d="M16 4C16 4 10 4 8 10C6 16 6 20 6 20H26C26 20 26 16 24 10C22 4 16 4 16 4Z"
+        fill="#ef4444"
+        opacity="0.9"
+      />
+      {/* Bell rim */}
+      <rect x="5" y="20" width="22" height="2.5" rx="1.25" fill="#ef4444" />
+      {/* Clapper */}
+      <circle cx="16" cy="25" r="2" fill="#ef4444" />
+
+      {/* Flame - center */}
+      <path
+        d="M16 1C16 1 13 4 14 7C14.5 8.5 16 9 16 9C16 9 15 7.5 15.5 6C16 4.5 18 3 18 3C18 3 17.5 5 17.5 6C17.5 7.5 19 8 19 8C19 8 18 5.5 18 4C18 2.5 16 1 16 1Z"
+        fill="#f59e0b"
+        opacity="0.95"
+      />
+      {/* Flame - left flicker */}
+      <path
+        d="M12 5C12 5 10.5 7 11 8.5C11.5 10 13 10 13 10C13 10 12 8.5 12.5 7.5C13 6.5 12 5 12 5Z"
+        fill="#f59e0b"
+        opacity="0.7"
+      />
+      {/* Flame - right flicker */}
+      <path
+        d="M20 5C20 5 21.5 7 21 8.5C20.5 10 19 10 19 10C19 10 20 8.5 19.5 7.5C19 6.5 20 5 20 5Z"
+        fill="#f59e0b"
+        opacity="0.7"
+      />
+
+      {/* Smoke wisps */}
+      <path
+        d="M10 3C10 3 9.5 1.5 10.5 1C11.5 0.5 11 2 11 2"
+        stroke="#737373"
+        strokeWidth="0.7"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path
+        d="M22 3C22 3 22.5 1 21.5 0.5C20.5 0 21 2 21 2"
+        stroke="#737373"
+        strokeWidth="0.7"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+    </svg>
+  );
+}
