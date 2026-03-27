@@ -153,8 +153,7 @@ function CategorySection({
 }) {
   const summary = categorySummary(checks);
   const { icon, color } = statusIcon[summary.status];
-  // Collapsed by default if everything passes
-  const [expanded, setExpanded] = useState(summary.status !== "pass");
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className=" border border-border bg-bg overflow-hidden">
@@ -190,8 +189,20 @@ function CategorySection({
   );
 }
 
+const statusOrder: Record<string, number> = { fail: 0, warn: 1, pass: 2 };
+
 export function QualityChecks({ checks }: { checks: QualityCheck[] }) {
   const categories = ["integration", "eval", "functional"] as const;
+
+  // Sort categories: failures first, then warnings, then all-pass
+  const sortedCategories = [...categories]
+    .map((cat) => ({ cat, checks: checks.filter((c) => c.category === cat) }))
+    .filter((g) => g.checks.length > 0)
+    .sort((a, b) => {
+      const aStatus = categorySummary(a.checks).status;
+      const bStatus = categorySummary(b.checks).status;
+      return (statusOrder[aStatus] ?? 2) - (statusOrder[bStatus] ?? 2);
+    });
 
   const passCount = checks.filter((c) => c.status === "pass").length;
   const total = checks.length;
@@ -216,13 +227,9 @@ export function QualityChecks({ checks }: { checks: QualityCheck[] }) {
       </p>
 
       <div className="space-y-2">
-        {categories.map((cat) => {
-          const catChecks = checks.filter((c) => c.category === cat);
-          if (catChecks.length === 0) return null;
-          return (
+        {sortedCategories.map(({ cat, checks: catChecks }) => (
             <CategorySection key={cat} cat={cat} checks={catChecks} />
-          );
-        })}
+        ))}
       </div>
     </div>
   );
