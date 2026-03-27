@@ -26,6 +26,13 @@ export type QualityCheck = {
   checkedAt: string;
 };
 
+export type CommitInfo = {
+  sha: string;
+  message: string;
+  url: string;
+  runUrl?: string | null;
+};
+
 export type DayHistory = {
   date: string;
   drafted: boolean;
@@ -33,9 +40,21 @@ export type DayHistory = {
   posted: boolean;
 };
 
+export type RunHistory = {
+  runAt: string;
+  commit: CommitInfo | null;
+  summary: {
+    total: number;
+    passed: number;
+    failed: number;
+    warned: number;
+  };
+};
+
 export type DoneTodayBotData = {
   pipeline: PipelineStage[];
   qualityChecks: QualityCheck[];
+  latestCommit: CommitInfo | null;
   historyWeek: DayHistory[];
   historyMonth: DayHistory[];
   lastCheckedAt: string;

@@ -11,6 +11,7 @@ const BOT_URL = process.env.DONE_TODAY_BOT_URL
 
 type TestResultFile = {
   runAt: string;
+  commit: { sha: string; message: string; url: string; runUrl?: string | null } | null;
   health: HealthResponse | null;
   checks: QualityCheck[];
   summary: {
@@ -22,7 +23,8 @@ type TestResultFile = {
 };
 
 type HistoryEntry = {
-  date: string;
+  runAt: string;
+  commit: TestResultFile["commit"];
   summary: TestResultFile["summary"];
   health: HealthResponse | null;
 };
@@ -135,14 +137,23 @@ async function fetchHistory(): Promise<HistoryEntry[]> {
 
 function buildDayHistory(entries: HistoryEntry[], days: number): DayHistory[] {
   const now = new Date();
-  const entryMap = new Map(entries.map((e) => [e.date, e]));
-  const history: DayHistory[] = [];
 
+  // Group entries by date, keep the latest per day
+  const byDate = new Map<string, HistoryEntry>();
+  for (const entry of entries) {
+    const date = entry.runAt.split("T")[0];
+    const existing = byDate.get(date);
+    if (!existing || entry.runAt > existing.runAt) {
+      byDate.set(date, entry);
+    }
+  }
+
+  const history: DayHistory[] = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
-    const entry = entryMap.get(dateStr);
+    const entry = byDate.get(dateStr);
 
     history.push({
       date: dateStr,
@@ -167,6 +178,7 @@ export async function getDoneTodayBotData(): Promise<DoneTodayBotData> {
   return {
     pipeline,
     qualityChecks: latestResult?.checks ?? [],
+    latestCommit: latestResult?.commit ?? null,
     historyWeek: buildDayHistory(historyEntries, 7),
     historyMonth: buildDayHistory(historyEntries, new Date().getDate()),
     lastCheckedAt: latestResult?.runAt ?? new Date().toISOString(),
